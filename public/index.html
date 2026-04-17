@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QE Playbook Assistant</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-icon">📋</span>
+        <h2>QE Playbook</h2>
+      </div>
+      <nav class="file-list" id="fileList">
+        <p class="muted-text">Loading...</p>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn-sidebar" id="refreshFiles">↺ Refresh Files</button>
+      </div>
+    </aside>
+
+    <!-- Chat -->
+    <main class="chat-area">
+      <header class="chat-header">
+        <div>
+          <h1>QE Reflection Assistant</h1>
+          <p class="subtitle">Capture patterns · Reflect on issues · Update your playbook</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-review" id="reviewBtn" title="Summarise playbook — issue types, decisions, and top preventions">&#x1F50D; Review Playbook</button>
+          <button class="btn-new-chat" id="newChatBtn" title="Start a new conversation">New Chat</button>
+        </div>
+      </header>
+
+      <!-- Review Modal -->
+      <div class="review-overlay hidden" id="reviewOverlay">
+        <div class="review-modal" id="reviewModal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+          <div class="review-modal-header">
+            <div>
+              <h2 id="reviewModalTitle">Playbook Review</h2>
+              <p class="review-subtitle">Issue types &middot; Decisions made &middot; Top 5 preventative measures</p>
+            </div>
+            <button class="btn-icon" id="closeReview" title="Close">&#x2715;</button>
+          </div>
+          <div class="review-modal-body" id="reviewModalBody">
+            <div class="review-loading">
+              <div class="typing-indicator"><span></span><span></span><span></span></div>
+              <p>Analysing your playbook&hellip;</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="messages" id="messages">
+        <div class="message assistant">
+          <div class="message-content">
+            <p>Hello — I'm your QE reflection partner.</p>
+            <p>Tell me about a recent issue, near-miss, or decision and I'll help you capture it as a structured playbook entry. I'll also flag if I've seen similar patterns before.</p>
+            <p class="hint-text">Tip: Press <kbd>Enter</kbd> to send, <kbd>Shift+Enter</kbd> for a new line.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <textarea
+          id="userInput"
+          placeholder="Describe an issue, pattern, or decision to reflect on..."
+          rows="3"
+        ></textarea>
+        <button class="btn-send" id="sendBtn">Send</button>
+      </div>
+    </main>
+
+    <!-- Playbook Viewer Panel -->
+    <div class="viewer-panel hidden" id="viewerPanel">
+      <div class="viewer-header">
+        <h3 id="viewerTitle">File</h3>
+        <button class="btn-icon" id="closeViewer" title="Close">✕</button>
+      </div>
+      <div class="viewer-body" id="viewerBody"></div>
+    </div>
+
+  </div>
+
+  <!-- Setup Overlay (shown when no GitHub token is configured) -->
+  <div class="setup-overlay" id="setupOverlay">
+    <div class="setup-card">
+      <div class="setup-header">
+        <span class="setup-icon">📋</span>
+        <h1>QE Playbook Assistant</h1>
+        <p class="setup-tagline">Powered by GitHub Models — free for any GitHub account</p>
+      </div>
+
+      <p class="setup-desc">
+        This tool uses <strong>GitHub Models</strong> (gpt-4o) to help you capture QE issues and build a living playbook.
+        To get started, you need a free GitHub personal access token — no payment method required.
+      </p>
+
+      <div class="setup-steps">
+        <div class="setup-step">
+          <span class="step-num">1</span>
+          <div class="step-body">
+            <strong>Open GitHub token settings</strong>
+            <p>Go to <strong>github.com → Settings → Developer settings → Personal access tokens → Tokens (classic)</strong></p>
+            <p>Or visit directly: <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener">github.com/settings/tokens/new</a></p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="step-num">2</span>
+          <div class="step-body">
+            <strong>Generate a new token</strong>
+            <p>Give it any name (e.g. <em>qe-playbook</em>). Set expiration to your preference. <strong>No special scopes are required</strong> — leave all boxes unchecked.</p>
+          </div>
+        </div>
+        <div class="setup-step">
+          <span class="step-num">3</span>
+          <div class="step-body">
+            <strong>Paste it below and click Connect</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="setup-input-group">
+        <input
+          type="password"
+          id="tokenInput"
+          placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button id="saveTokenBtn" class="btn-setup-save">Connect</button>
+      </div>
+
+      <p class="setup-error" id="setupError"></p>
+
+      <p class="setup-note">
+        Your token is stored locally in <code>secrets.json</code> and sent only to <code>models.inference.ai.azure.com</code> (GitHub's API). It never leaves your machine for any other purpose.
+      </p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
